@@ -1,5 +1,8 @@
+import zion.Window;
+
 public class Main {
     public static void main(String[] args) {
-        System.out.println("hello world");
+        Window window = Window.get();
+        window.run();
     }
 }
