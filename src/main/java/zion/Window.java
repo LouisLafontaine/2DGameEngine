@@ -3,6 +3,9 @@ import org.lwjgl.Version;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.opengl.GL;
 
+import java.util.Objects;
+
+import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.system.MemoryUtil.NULL;
@@ -11,9 +14,9 @@ public class Window {
     private int width;
     private int height;
     private String title;
-    private long glfwWindow;
+    private long window;
     
-    private static Window window = null;
+    private static Window windowObject = null;
     
     private Window() {
         this.width = 1920;
@@ -22,11 +25,11 @@ public class Window {
     }
     
     public static Window get() {
-        if (Window.window == null) {
-            Window.window = new Window();
+        if (Window.windowObject == null) {
+            Window.windowObject = new Window();
         }
         
-        return Window.window;
+        return Window.windowObject;
     }
     
     public void run() {
@@ -34,10 +37,19 @@ public class Window {
         
         init();
         loop();
+    
+        // Free the window callbacks and destroy the window
+        glfwFreeCallbacks(window);
+        glfwDestroyWindow(window);
+    
+        // Terminate GLFW and free the error callback
+        glfwTerminate();
+        Objects.requireNonNull(glfwSetErrorCallback(null)).free();
     }
     
     public void init() {
-        // Setup an error callback
+        // Set up an error callback. The default implementation
+        // will print the error message in System.err.
         GLFWErrorCallback.createPrint(System.err).set();
         
         // Initialize GLFW
@@ -46,24 +58,24 @@ public class Window {
         }
         
         // Configure GLFW
-        glfwDefaultWindowHints();
+        glfwDefaultWindowHints(); // optional, the current window hints are already the default
         glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
         glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
         glfwWindowHint(GLFW_MAXIMIZED, GLFW_TRUE);
         
         // Create the window
-        glfwWindow = glfwCreateWindow(this.width, this.height, this.title, NULL, NULL);
-        if (glfwWindow == NULL) {
+        window = glfwCreateWindow(this.width, this.height, this.title, NULL, NULL);
+        if (window == NULL) {
             throw new IllegalStateException("Failed to create the GLFW window.");
         }
         
         // Make the OpenGL context current
-        glfwMakeContextCurrent(glfwWindow);
+        glfwMakeContextCurrent(window);
         // Enable v-sync
         glfwSwapInterval(1);
         
         // Make the window visible
-        glfwShowWindow(glfwWindow);
+        glfwShowWindow(window);
         
         // This line is critical for LWJGL's interoperation with GLFW's
         // OpenGL context, or any context that is managed externally.
@@ -74,14 +86,27 @@ public class Window {
     }
     
     public void loop() {
-        while (!glfwWindowShouldClose(glfwWindow)) {
-            // Poll events
-            glfwPollEvents();
+        // This line is critical for LWJGL's interoperation with GLFW's
+        // OpenGL context, or any context that is managed externally.
+        // LWJGL detects the context that is current in the current thread,
+        // creates the GLCapabilities instance and makes the OpenGL
+        // bindings available for use.
+        GL.createCapabilities();
+    
+        // Set the clear color
+        glClearColor(1.0f, 0.0f, 0.0f, 0.0f);
+    
+        // Run the rendering loop until the user has attempted to close
+        // the window or has pressed the ESCAPE key.
+        while (!glfwWindowShouldClose(window)) {
             
-            glClearColor(1f, 0f, 0f, 0f);
+            glClearColor(1f, 1f, 1f, 1f);
             glClear(GL_COLOR_BUFFER_BIT);
             
-            glfwSwapBuffers(glfwWindow);
+            glfwSwapBuffers(window); // swap the color buffers
+    
+            // Poll for window events.
+            glfwPollEvents();
         }
     }
 }
