@@ -67,6 +67,9 @@ public class Window {
         glfwSetCursorPosCallback(window, MouseListener::mousePosCallback);
         glfwSetMouseButtonCallback(window, MouseListener::mouseButtonCallback);
         glfwSetScrollCallback(window, MouseListener::mouseScrollCallback);
+        
+        // Keyboard callback
+        glfwSetKeyCallback(window, KeyListener::keyCallback);
     
         // Configure GLFW
         glfwDefaultWindowHints(); // optional, the current window hints are already the default
@@ -105,6 +108,15 @@ public class Window {
     
             // Poll for window events.
             glfwPollEvents();
+            if(KeyListener.isKeyPressed(GLFW_KEY_SPACE)) {
+                System.out.println("Space Key is pressed !");
+            }
+            if(MouseListener.isDragging()) {
+                System.out.println("is dragging !");
+            }
+            if(MouseListener.mouseButtonDown(GLFW_MOUSE_BUTTON_1)){
+                System.out.println("mouse button 1 is pressed !");
+            }
         }
     }
 }
