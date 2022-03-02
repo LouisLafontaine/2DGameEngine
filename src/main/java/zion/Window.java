@@ -57,17 +57,22 @@ public class Window {
             throw new IllegalStateException("Unable to initialize GLFW.");
         }
         
-        // Configure GLFW
-        glfwDefaultWindowHints(); // optional, the current window hints are already the default
-        glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
-        glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
-        glfwWindowHint(GLFW_MAXIMIZED, GLFW_TRUE);
-        
         // Create the window
         window = glfwCreateWindow(this.width, this.height, this.title, NULL, NULL);
         if (window == NULL) {
             throw new IllegalStateException("Failed to create the GLFW window.");
         }
+    
+        // Mouse callback
+        glfwSetCursorPosCallback(window, MouseListener::mousePosCallback);
+        glfwSetMouseButtonCallback(window, MouseListener::mouseButtonCallback);
+        glfwSetScrollCallback(window, MouseListener::mouseScrollCallback);
+    
+        // Configure GLFW
+        glfwDefaultWindowHints(); // optional, the current window hints are already the default
+        glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
+        glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
+        glfwWindowHint(GLFW_MAXIMIZED, GLFW_TRUE);
         
         // Make the OpenGL context current
         glfwMakeContextCurrent(window);
@@ -76,13 +81,6 @@ public class Window {
         
         // Make the window visible
         glfwShowWindow(window);
-        
-        // This line is critical for LWJGL's interoperation with GLFW's
-        // OpenGL context, or any context that is managed externally.
-        // LWJGL detects the context that is current in the current thread,
-        // creates the GLCapabilities instance and makes the OpenGL
-        // bindings available for use.
-        GL.createCapabilities();
     }
     
     public void loop() {
