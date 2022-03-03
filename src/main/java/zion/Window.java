@@ -123,6 +123,7 @@ public class Window {
         // Set the clear color
         glClearColor(1.0f, 0.0f, 0.0f, 0.0f);
         
+        // dt management
         float beginTime = Time.getTime();
         float endTime;
         float dt = -1.0f;
@@ -133,9 +134,9 @@ public class Window {
             
             glClearColor(r,g,b,a);
             glClear(GL_COLOR_BUFFER_BIT);
-            
             glfwSwapBuffers(window); // swap the color buffers
             
+            // Scenes
             if(dt >= 0) {
                 currentScene.update(dt);
             }
@@ -149,7 +150,6 @@ public class Window {
             beginTime = endTime;
 //            System.out.println(beginTime + " - " + endTime + " - " + dt);
             // won't it end up loosing precision ? Each float has only 7 digit precision, so how is the difference so precise ?
-            
         }
     }
 }
