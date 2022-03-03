@@ -14,10 +14,10 @@ import static org.lwjgl.system.MemoryUtil.NULL;
 public class Window {
     private int width;
     private int height;
-    float r = 1;
-    float g = 1;
-    float b = 1;
-    float a = 1;
+    float r = 1.0f;
+    float g = 1.0f;
+    float b = 1.0f;
+    float a = 1.0f;
     private String title;
     private long window;
     
@@ -120,9 +120,7 @@ public class Window {
     
     public void loop() {
     
-        // Set the clear color
-        glClearColor(1.0f, 0.0f, 0.0f, 0.0f);
-        
+    
         // dt management
         float beginTime = Time.getTime();
         float endTime;
@@ -134,12 +132,13 @@ public class Window {
             
             glClearColor(r,g,b,a);
             glClear(GL_COLOR_BUFFER_BIT);
-            glfwSwapBuffers(window); // swap the color buffers
             
             // Scenes
             if(dt >= 0) {
                 currentScene.update(dt);
             }
+    
+            glfwSwapBuffers(window); // swap the color buffers
     
             // Poll for window events.
             glfwPollEvents();
