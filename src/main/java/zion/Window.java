@@ -42,10 +42,11 @@ public class Window {
         switch (newScene) {
             case 0:
                 currentScene = new LevelEditorScene();
-//                currentScene.init();
+                currentScene.init();
                 break;
             case 1:
                 currentScene = new LevelScene();
+                currentScene.init();
             default:
                 assert false : "Unknown scene '" + newScene + "'";
         }
@@ -75,6 +76,14 @@ public class Window {
         if (!glfwInit()) {
             throw new IllegalStateException("Unable to initialize GLFW.");
         }
+    
+        // Configure GLFW
+        glfwDefaultWindowHints(); // optional, the current window hints are already the default
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
+        glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
+        glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
+        glfwWindowHint(GLFW_MAXIMIZED, GLFW_TRUE);
         
         // Create the window
         window = glfwCreateWindow(this.width, this.height, this.title, NULL, NULL);
@@ -89,13 +98,7 @@ public class Window {
         
         // Keyboard callback
         glfwSetKeyCallback(window, KeyListener::keyCallback);
-    
-        // Configure GLFW
-        glfwDefaultWindowHints(); // optional, the current window hints are already the default
-        glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
-        glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
-        glfwWindowHint(GLFW_MAXIMIZED, GLFW_TRUE);
-        
+ 
         // Make the OpenGL context current
         glfwMakeContextCurrent(window);
         // Enable v-sync
@@ -103,17 +106,19 @@ public class Window {
         
         // Make the window visible
         glfwShowWindow(window);
-        
-        Window.changeScene(0);
-    }
     
-    public void loop() {
         // This line is critical for LWJGL's interoperation with GLFW's
         // OpenGL context, or any context that is managed externally.
         // LWJGL detects the context that is current in the current thread,
         // creates the GLCapabilities instance and makes the OpenGL
         // bindings available for use.
         GL.createCapabilities();
+        
+        // Set the scene to the
+        Window.changeScene(0);
+    }
+    
+    public void loop() {
     
         // Set the clear color
         glClearColor(1.0f, 0.0f, 0.0f, 0.0f);
@@ -142,7 +147,9 @@ public class Window {
             endTime = Time.getTime();
             dt = endTime - beginTime;
             beginTime = endTime;
+//            System.out.println(beginTime + " - " + endTime + " - " + dt);
+            // won't it end up loosing precision ? Each float has only 7 digit precision, so how is the difference so precise ?
+            
         }
     }
-    
 }
