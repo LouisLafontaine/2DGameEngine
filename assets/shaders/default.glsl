@@ -8,7 +8,7 @@ out vec4 fColor; // letter f is for fragment shader
 
 void main() {
     fColor = aColor;
-    gl_Position = vec4(aPos, 1.0);
+    gl_Position = vec4(aPos, 1.0f);
 }
 
 #type fragment
